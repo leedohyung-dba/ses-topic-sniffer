@@ -1,6 +1,6 @@
 {
     "name": "leedohyung-dba/ses-topic-sniffer",
-    "description": "A PHP library that catch detaile ses topic information.",
+    "description": "A PHP library for catch detail information to SES topic.",
     "type": "php-library",
     "keywords": ["php", "ses", "aws", "sns"],
     "homepage": "https://github.com/leedohyung-dba/ses-topic-sniffer",
