@@ -1,0 +1,23 @@
+{
+    "name": "leedohyung-dba/ses-topic-sniffer",
+    "description": "A PHP library that catch detaile ses topic information.",
+    "type": "php-library",
+    "keywords": ["php", "ses", "aws", "sns"],
+    "homepage": "https://github.com/leedohyung-dba/ses-topic-sniffer",
+    "license": "MIT",
+    "authors": [
+        {
+                "name": "lee",
+                "homepage": "https://github.com/leedohyung-dba",
+                "role": "Author"
+            }
+    ],
+    "require": {
+        "php": ">=5.5.9"
+    },
+    "autoload": {
+        "psr-4": {
+            "SesTopicSniffer\\": "src"
+        }
+    }
+}
