@@ -56,6 +56,19 @@ class DocomoDomain extends DomainContainer
             ]
         ]);
 
+        // append to real confirm data for hard bounce data
+        $this->appendRealHardBounceTopicMsg([
+            'notificationType' => 'Bounce',
+            'bounceType' => 'Permanent',
+            'bounceSubType' => 'Suppressed',
+            'bouncedRecipients' => [
+                0 => [
+                    'action' => 'failed',
+                    'status' => '5.1.1'
+                ]
+            ]
+        ]);
+
         // append to real confirm data for delivery data
         $this->appendRealDeliveryTopicMsg([
             'notificationType' => 'Delivery'
