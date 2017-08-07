@@ -3,14 +3,74 @@ namespace SesTopicSniffer;
 
 use SesTopicSniffer\Config\SesDefine;
 use SesTopicSniffer\Shark\RealShark\TopicShark as RealTopicShark;
-use SesTopicSniffer\Shark\StandardShark\TopicShark as StandardTopicShark;
+use SesTopicSniffer\Shark\SesStdShark\TopicShark as SesStdTopicShark;
 
 /**
  * SesTopicSniffer
  */
 class SesTopicSniffer
 {
-    private $topicMsg;
+    const UNDEFINED_BOUNCE_STATUS_CODE = 400;
+    const SOFT_BOUNCE_STATUS_CODE = 410;
+    const HARD_BOUNCE_STATUS_CODE = 420;
+
+    const COMPLAINT_STATUS_CODE = 500;
+    const SOFT_COMPLAINT_STATUS_CODE = 510;
+    const HARD_COMPLAINT_STATUS_CODE = 520;
+
+    const DELIVERY_STATUS_CODE = 200;
+
+    private $_RealTopicShark;
+    private $_SesStdTopicShark;
+
+    public $sesStdStatus;
+    public $realStatus;
+
+    public $topicMsg;
+
+    public $mail;
+
+    /**
+     * getInstance
+     * return instance after checks
+     *
+     * @param object $snsTopic
+     * @author lee <lee@fusic.co.jp>
+     */
+    public static function getInstance($snsTopic)
+    {
+        static $instance = null;
+
+        // check to singleton and require info in to topic msg
+        $topicMsg = json_decode($snsTopic, false);
+        $topicMatchMsg = SesDefine::parseRequestMsgForMatching($topicMsg);
+        if (null === $instance &&
+            !empty($topicMatchMsg) &&                   // check the topic msg info
+            !empty($topicMsg->mail->destination) &&     // check the email address
+            !empty($topicMsg->mail->messageId)) {       // check the message_id
+            $instance = new SesTopicSniffer($topicMatchMsg, $topicMsg->mail);
+        }
+
+        return $instance;
+    }
+
+    /**
+     * __clone
+     *
+     * @author lee <lee@fusic.co.jp>
+     */
+    private function __clone()
+    {
+    }
+
+    /**
+     * __wakeup
+     *
+     * @author lee <lee@fusic.co.jp>
+     */
+    private function __wakeup()
+    {
+    }
 
     /**
      * __construct
@@ -18,25 +78,38 @@ class SesTopicSniffer
      * @param object $snsTopic
      * @author lee <lee@fusic.co.jp>
      */
-    function __construct($snsTopic) {
-        $this->topicMsg = json_decode($snsTopic, false);
-        $this->RealTopicShark = new RealTopicShark($this->getDomain());
-        $this->StandardTopicShark = new StandardTopicShark();
+    protected function __construct($topicMatchMsg, $mail) {
+        $this->_SesStdTopicShark = new SesStdTopicShark();
+        $this->_RealTopicShark = new RealTopicShark($this->_getDomain($mail->destination[0]));
+
+        $this->sesStdStatus = $this->_SesStdTopicShark->snatchStatus($topicMatchMsg);
+        $this->realStatus = $this->_RealTopicShark->snatchStatus($topicMatchMsg);
+        $this->topicMsg = $topicMatchMsg;
+        $this->mail = $mail;
     }
 
     /**
-     * getTopicDetailStatus
+     * isNotFactOrEqualSesStd
      *
-     * @return array
+     * @return boolean
      * @author lee <lee@fusic.co.jp>
      */
-    public function getTopicDetailStatus() {
-        $topicMatchMsg = SesDefine::parseRequestMsgForMatching($this->topicMsg);
-        return [
-            'ses_standard_status' => $this->StandardTopicShark->snatchStatus($topicMatchMsg),   // SES通りの状態
-            'fect_topic_status' => $this->RealTopicShark->snatchStatus($topicMatchMsg),         // 実際の状態
-            'topic_msg_point_info' => $topicMatchMsg,                                           // TopicMsgの要点
-        ];
+    public function isNotFactOrEqualSesStd()
+    {
+        if(empty($this->realStatus['status'])) {
+            return true;
+        }
+
+        foreach ($this->realStatus['status'] as $statusCode => $statusName) {
+            if($this->sesStdStatus['status_code'] == self::COMPLAINT_STATUS_CODE &&
+               $statusCode != self::SOFT_COMPLAINT_STATUS_CODE &&
+               $statusCode != self::HARD_COMPLAINT_STATUS_CODE) {
+                return false;
+            } else if($statusCode != $this->sesStdStatus['status_code']) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
@@ -46,10 +119,8 @@ class SesTopicSniffer
      * @return array | false
      * @author lee <lee@fusic.co.jp>
      */
-    public function checkDomain($domain = null) {
-        if(empty($domain)) {
-            $domain = $this->getDomain();
-        }
+    static function checkDomain($domain)
+    {
         // check MX(mail exchanger) record to the domain
         if(checkdnsrr($domain, "MX")) {
             if (getmxrr($domain, $MXHost))  {
@@ -67,19 +138,19 @@ class SesTopicSniffer
      *
      * @author lee <lee@fusic.co.jp>
      */
-    public function checkEmailAccount() {
+    static function checkEmailAccount()
+    {
         // @todo 実際メールアドレスが存在するかを確認
     }
 
     /**
-     * getDomain
+     * _getDomain
      *
-     * @return array
+     * @return string
      * @author lee <lee@fusic.co.jp>
      */
-    private function getDomain()
+    private function _getDomain($emailAddress)
     {
-        $emailAddress = $this->topicMsg->mail->destination[0];
         $arr = explode("@", $emailAddress);
         return $arr[1];
     }

@@ -3,55 +3,56 @@ namespace SesTopicSniffer\Shark\RealShark;
 
 use SesTopicSniffer\Shark\SharkContainer;
 use SesTopicSniffer\Shark\RealShark\Domains\DomainFactory;
+use SesTopicSniffer\SesTopicSniffer;
 
 /**
  * TopicShark
  */
 class TopicShark implements SharkContainer
 {
-    const BOUNCE_LIB_STATUS = [
-        'status_code' => '400',
+    const BOUNCE_STATUS = [
+        'status_code' => SesTopicSniffer::UNDEFINED_BOUNCE_STATUS_CODE,
         'status_name' => 'Bounce'
     ];
 
-    const SOFT_BOUNCE_LIB_STATUS = [
-        'status_code' => '410',
+    const SOFT_BOUNCE_STATUS = [
+        'status_code' => SesTopicSniffer::SOFT_BOUNCE_STATUS_CODE,
         'status_name' => 'SoftBounce'
     ];
 
-    const HARD_BOUNCE_LIB_STATUS = [
-        'status_code' => '420',
+    const HARD_BOUNCE_STATUS = [
+        'status_code' => SesTopicSniffer::HARD_BOUNCE_STATUS_CODE,
         'status_name' => 'HardBounce'
     ];
 
-    const COMPLAINT_LIB_STATUS = [
-        'status_code' => '500',
+    const COMPLAINT_STATUS = [
+        'status_code' => SesTopicSniffer::COMPLAINT_STATUS_CODE,
         'status_name' => 'Complaint'
     ];
 
-    const SOFT_COMPLAINT_LIB_STATUS = [
-        'status_code' => '510',
+    const SOFT_COMPLAINT_STATUS = [
+        'status_code' => SesTopicSniffer::SOFT_COMPLAINT_STATUS_CODE,
         'status_name' => 'SoftComplaint'
     ];
 
-    const HARD_COMPLAINT_LIB_STATUS = [
-        'status_code' => '520',
+    const HARD_COMPLAINT_STATUS = [
+        'status_code' => SesTopicSniffer::HARD_COMPLAINT_STATUS_CODE,
         'status_name' => 'HardComplaint'
     ];
 
-    const DELIVERY_LIB_STATUS = [
-        'status_code' => '200',
+    const DELIVERY_STATUS = [
+        'status_code' => SesTopicSniffer::DELIVERY_STATUS_CODE,
         'status_name' => 'Delivery'
     ];
 
     const UNDEFINED_STATUS = [
-        'status_code' => '0',
+        'status_code' => 0,
         'status_name' => 'Undefined'
     ];
 
     const RESULT_FORMAT = [
         'status' => [],
-        'detail' => ''
+        'detail' => 'notting match of case to topic message'
     ];
 
     private $factory;
@@ -79,40 +80,32 @@ class TopicShark implements SharkContainer
         $status = self::RESULT_FORMAT;
 
         if(empty($topicMatchMsg)) {
-            array_push($status['status'], self::UNDEFINED_STATUS);
-            $status['detail'] = 'notting match of case to topic message';
             return $status;
         }
 
         if($this->Domain->matchIsRealSoftBounce($topicMatchMsg)) {
-            array_push($status['status'], self::SOFT_BOUNCE_LIB_STATUS);
-            $status['detail'] = 'This is a confirmed result of the SoftBounce.';
+            $status['status'][self::SOFT_BOUNCE_STATUS['status_code']] = self::SOFT_BOUNCE_STATUS['status_name'];
+            $status['detail'] = 'This is a confirmed status of the SoftBounce.';
         }
 
         if($this->Domain->matchIsRealHardBounce($topicMatchMsg)) {
-            array_push($status['status'], self::HARD_BOUNCE_LIB_STATUS);
-            $status['detail'] = 'This is a confirmed result of the HardBounce.';
+            $status['status'][self::HARD_BOUNCE_STATUS['status_code']] = self::HARD_BOUNCE_STATUS['status_name'];
+            $status['detail'] = 'This is a confirmed status of the HardBounce.';
         }
 
         if($this->Domain->matchIsRealSoftComplaint($topicMatchMsg)) {
-            array_push($status['status'], self::SOFT_COMPLAINT_LIB_STATUS);
-            $status['detail'] = 'This is a confirmed result of the SoftComplaint.';
+            $status['status'][self::SOFT_COMPLAINT_STATUS['status_code']] = self::SOFT_COMPLAINT_STATUS['status_name'];
+            $status['detail'] = 'This is a confirmed status of the SoftComplaint.';
         }
 
         if($this->Domain->matchIsRealHardComplaint($topicMatchMsg)) {
-            array_push($status['status'], self::HARD_COMPLAINT_LIB_STATUS);
-            $status['detail'] = 'This is a confirmed result of the HardComplaint.';
+            $status['status'][self::HARD_COMPLAINT_STATUS['status_code']] = self::HARD_COMPLAINT_STATUS['status_name'];
+            $status['detail'] = 'This is a confirmed status of the HardComplaint.';
         }
 
         if($this->Domain->matchIsRealDelivery($topicMatchMsg)) {
-            array_push($status['status'], self::DELIVERY_LIB_STATUS);
-            $status['detail'] = 'This is a confirmed result of the Success.';
-        }
-
-        if(empty($topicMatchMsg)) {
-            array_push($status['status'], self::UNDEFINED_STATUS);
-            $status['detail'] = 'notting match of case to topic message';
-            return $status;
+            $status['status'][self::DELIVERY_STATUS['status_code']] = self::DELIVERY_STATUS['status_name'];
+            $status['detail'] = 'This is a confirmed status of the Success.';
         }
 
         if(count($status['status']) > 1) {
