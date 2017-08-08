@@ -79,7 +79,7 @@ class TopicShark implements SharkContainer
     {
         $status = self::RESULT_FORMAT;
 
-        if(empty($topicMatchMsg)) {
+        if(empty($topicMatchMsg) || empty($this->Domain)) {
             return $status;
         }
 
