@@ -12,71 +12,88 @@ class TopicShark implements SharkContainer
 {
     // aws bounce status for Topic message
     const TOPIC_BOUNCE_MSG_FIND = [
-        'Bounce' => [                // notificationType
+        'Bounce' => [                       // notificationType
             'Undetermined' => [             // bounceType
                 'Undetermined' => [         // bounceSubType
-                    'status_code' => SesTopicSniffer::UNDEFINED_BOUNCE_STATUS_CODE,
-                    'status_name' => 'Undetermined',
+                    'status' => [
+                        SesTopicSniffer::UNDEFINED_BOUNCE_STATUS_CODE => 'Undetermined'
+                    ],
                     'detail' => "Amazon SES was unable to determine a specific bounce reason."
                 ]
             ],
             'Transient' => [                // bounceType
                 'General' => [              // bounceSubType
-                    'status_code' => SesTopicSniffer::SOFT_BOUNCE_STATUS_CODE,
-                    'status_name' => 'SoftBounce',
-                    'status_sub_code' => 411,
-                    'status_sub_name' => 'General',
+                    'status' => [
+                        SesTopicSniffer::SOFT_BOUNCE_STATUS_CODE => 'SoftBounce'
+                    ],
+                    'status_sub' => [
+                        411 => 'General'
+                    ],
                     'detail' => "Amazon SES received a general bounce. You may be able to successfully retry sending to that recipient in the future."
                 ],
                 'MailboxFull' => [          // bounceSubType
-                    'status_code' => SesTopicSniffer::SOFT_BOUNCE_STATUS_CODE,
-                    'status_name' => 'SoftBounce',
-                    'status_sub_code' => 412,
-                    'status_sub_name' => 'MailboxFull',
+                    'status' => [
+                        SesTopicSniffer::SOFT_BOUNCE_STATUS_CODE => 'SoftBounce'
+                    ],
+                    'status_sub' => [
+                        412 => 'MailboxFull'
+                    ],
                     'detail' => "Amazon SES received a mailbox full bounce. You may be able to successfully retry sending to that recipient in the future."
                 ],
                 'MessageTooLarge' => [      // bounceSubType
-                    'status_code' => SesTopicSniffer::SOFT_BOUNCE_STATUS_CODE,
-                    'status_name' => 'SoftBounce',
-                    'status_sub_code' => 413,
-                    'status_sub_name' => 'MessageTooLarge',
+                    'status' => [
+                        SesTopicSniffer::SOFT_BOUNCE_STATUS_CODE => 'SoftBounce'
+                    ],
+                    'status_sub' => [
+                        413 => 'MessageTooLarge'
+                    ],
                     'detail' => "Amazon SES received a message too large bounce. You may be able to successfully retry sending to that recipient if you reduce the message size."
                 ],
                 'ContentRejected' => [      // bounceSubType
-                    'status_code' => SesTopicSniffer::SOFT_BOUNCE_STATUS_CODE,
-                    'status_name' => 'SoftBounce',
-                    'status_sub_code' => 414,
-                    'status_sub_name' => 'ContentRejected',
+                    'status' => [
+                        SesTopicSniffer::SOFT_BOUNCE_STATUS_CODE => 'SoftBounce'
+                    ],
+                    'status_sub' => [
+                        414 => 'ContentRejected'
+                    ],
                     'detail' => "Amazon SES received a content rejected bounce. You may be able to successfully retry sending to that recipient if you change the message content."
                 ],
                 'AttachmentRejected' => [   // bounceSubType
-                    'status_code' => SesTopicSniffer::SOFT_BOUNCE_STATUS_CODE,
-                    'status_name' => 'SoftBounce',
-                    'status_sub_code' => 415,
-                    'status_sub_name' => 'AttachmentRejected',
+                    'status' => [
+                        SesTopicSniffer::SOFT_BOUNCE_STATUS_CODE => 'SoftBounce'
+                    ],
+                    'status_sub' => [
+                        415 => 'AttachmentRejected'
+                    ],
                     'detail' => "Amazon SES received an attachment rejected bounce. You may be able to successfully retry sending to that recipient if you remove or change the attachment."
                 ],
             ],
             'Permanent' => [                // bounceType
                 'General' => [              // bounceSubType
-                    'status_code' => SesTopicSniffer::HARD_BOUNCE_STATUS_CODE,
-                    'status_name' => 'HardBounce',
-                    'status_sub_code' => 421,
-                    'status_sub_name' => 'General',
+                    'status' => [
+                        SesTopicSniffer::HARD_BOUNCE_STATUS_CODE => 'HardBounce'
+                    ],
+                    'status_sub' => [
+                        421 => 'General'
+                    ],
                     'detail' => "Amazon SES received a general hard bounce and recommends that you remove the recipient's email address from your mailing list."
                 ],
                 'NoEmail' => [              // bounceSubType
-                    'status_code' => SesTopicSniffer::HARD_BOUNCE_STATUS_CODE,
-                    'status_name' => 'HardBounce',
-                    'status_sub_code' => 422,
-                    'status_sub_name' => 'NoEmail',
+                    'status' => [
+                        SesTopicSniffer::HARD_BOUNCE_STATUS_CODE => 'HardBounce'
+                    ],
+                    'status_sub' => [
+                        422 => 'NoEmail'
+                    ],
                     'detail' => "Amazon SES received a permanent hard bounce because the target email address does not exist. It is recommended that you remove that recipient from your mailing list."
                 ],
                 'Suppressed' => [           // bounceSubType
-                    'status_code' => SesTopicSniffer::HARD_BOUNCE_STATUS_CODE,
-                    'status_name' => 'HardBounce',
-                    'status_sub_code' => 423,
-                    'status_sub_name' => 'Suppressed',
+                    'status' => [
+                        SesTopicSniffer::HARD_BOUNCE_STATUS_CODE => 'HardBounce'
+                    ],
+                    'status_sub' => [
+                        423 => 'Suppressed'
+                    ],
                     'detail' => "Amazon SES has suppressed sending to this address because it has a recent history of bouncing as an invalid address."
                 ],
             ],
@@ -86,8 +103,9 @@ class TopicShark implements SharkContainer
     // aws complaint status for Topic message
     const TOPIC_COMPLAINT_MSG_FIND = [
         'Complaint' => [                // notificationType
-            'status_code' => SesTopicSniffer::COMPLAINT_STATUS_CODE,
-            'status_name' => 'Complaint',
+            'status' => [
+                SesTopicSniffer::COMPLAINT_STATUS_CODE => 'Complaint'
+            ],
             'detail' => 'This field is present only if the notificationType is Complaint and contains a JSON object that holds information about the complaint. '
         ]
     ];
@@ -95,16 +113,18 @@ class TopicShark implements SharkContainer
     // aws delivery status for Topic message
     const TOPIC_DELIVERY_MSG_FIND = [
         'Delivery' => [                 // notificationType
-            'status_code' => SesTopicSniffer::DELIVERY_STATUS_CODE,
-            'status_name' => 'Delivery',
+            'status' => [
+                SesTopicSniffer::DELIVERY_STATUS_CODE => 'Delivery'
+            ],
             'detail' => 'This field is present only if the notificationType is Delivery and contains a JSON object that holds information about the delivery.'
         ]
     ];
 
     // undefined
     const UNDEFINED_STATUS = [
-        'status_code' => '0',
-        'status_name' => 'Undefined',
+        'status' => [
+            '0' => 'Undefined'
+        ],
         'detail' => 'notting match of case to topic message'
     ];
 

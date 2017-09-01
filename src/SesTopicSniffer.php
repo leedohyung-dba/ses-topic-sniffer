@@ -100,16 +100,12 @@ class SesTopicSniffer
             return true;
         }
 
-        foreach ($this->realStatus['status'] as $statusCode => $statusName) {
-            if($this->sesStdStatus['status_code'] == self::COMPLAINT_STATUS_CODE &&
-               $statusCode != self::SOFT_COMPLAINT_STATUS_CODE &&
-               $statusCode != self::HARD_COMPLAINT_STATUS_CODE) {
-                return false;
-            } else if($statusCode != $this->sesStdStatus['status_code']) {
-                return false;
-            }
+        if(!empty($this->realStatus['status'][key($this->sesStdStatus['status'])]) &&
+           count($this->realStatus['status']) == 1) {
+            return true;
         }
-        return true;
+
+        return false;
     }
 
     /**
