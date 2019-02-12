@@ -46,7 +46,7 @@ class SesDefine
             $parseMsg['bounceType'] = $topicMsg->bounce->bounceType;
             $parseMsg['bounceSubType'] = $topicMsg->bounce->bounceSubType;
             $parseMsg['bouncedRecipientsStatus'] = [];
-            foreach ($topicMsg->bounce->bouncedRecipients as $value) {''
+            foreach ($topicMsg->bounce->bouncedRecipients as $value) {
                 $pushValue = [
                     'action' => isset($value->action) ? $value->action : null,
                     'status' => isset($value->status) ? $value->status : null
