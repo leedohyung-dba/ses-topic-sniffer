@@ -96,6 +96,15 @@ class TopicShark implements SharkContainer
                     ],
                     'detail' => "Amazon SES has suppressed sending to this address because it has a recent history of bouncing as an invalid address."
                 ],
+                'OnAccountSuppressionList' => [ // bounceSubType
+                    'status' => [
+                        SesTopicSniffer::HARD_BOUNCE_STATUS_CODE => 'HardBounce'
+                    ],
+                    'status_sub' => [
+                        424 => 'OnAccountSuppressionList'
+                    ],
+                    'detail' => "Amazon SES has suppressed sending to this address because it is on the account-level suppression list."
+                ],
             ],
         ]
     ];
